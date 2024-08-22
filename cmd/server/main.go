@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -15,7 +16,7 @@ func main() {
 
 	r.Get("/", helloWorld)
 
-	if err := http.ListenAndServe(":8080", r); err != nil {
+	if err := http.ListenAndServeTLS(":443", os.Getenv("CRT_FILE"), os.Getenv("KEY_FILE"), r); err != nil {
 		panic(err)
 	}
 }
