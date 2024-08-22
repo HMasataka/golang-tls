@@ -11,7 +11,7 @@ openssl genrsa 2048 > credentials/develop/server.key
 - 証明書署名要求書
 
 ```bash
-openssl req -new -key server.key > credentials/develop/server.csr
+openssl req -new -key credentials/develop/server.key > credentials/develop/server.csr
 ```
 
 - サーバ証明書
