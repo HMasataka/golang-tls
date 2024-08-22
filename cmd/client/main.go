@@ -2,40 +2,41 @@ package main
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"io"
 	"log"
-	"net/http"
 )
 
 func main() {
-	url := "https://localhost:443"
-
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			InsecureSkipVerify: true,
-		},
-	}
-
-	client := &http.Client{
-		Transport: tr,
-	}
-
-	request, err := http.NewRequest(http.MethodGet, url, nil)
+	cert, err := tls.LoadX509KeyPair("certs/client.pem", "certs/client.key")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("server: loadkeys: %s", err)
 	}
-
-	resp, err := client.Do(request)
+	config := tls.Config{Certificates: []tls.Certificate{cert}, InsecureSkipVerify: true}
+	conn, err := tls.Dial("tcp", "127.0.0.1:8000", &config)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("client: dial: %s", err)
 	}
-	defer resp.Body.Close()
+	defer conn.Close()
+	log.Println("client: connected to: ", conn.RemoteAddr())
 
-	byteArray, err := io.ReadAll(resp.Body)
+	state := conn.ConnectionState()
+	for _, v := range state.PeerCertificates {
+		fmt.Println(x509.MarshalPKIXPublicKey(v.PublicKey))
+		fmt.Println(v.Subject)
+	}
+	log.Println("client: handshake: ", state.HandshakeComplete)
+
+	message := "Hello\n"
+	n, err := io.WriteString(conn, message)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("client: write: %s", err)
 	}
+	log.Printf("client: wrote %q (%d bytes)", message, n)
 
-	fmt.Println(string(byteArray))
+	reply := make([]byte, 256)
+	n, err = conn.Read(reply)
+	log.Printf("client: read %q (%d bytes)", string(reply[:n]), n)
+	log.Print("client: exiting")
 }
