@@ -9,13 +9,13 @@ import (
 )
 
 func main() {
-	cert, err := tls.LoadX509KeyPair("certs/server.pem", "certs/server.key")
+	cert, err := tls.LoadX509KeyPair("credentials/develop/server.pem", "credentials/develop/server.key")
 	if err != nil {
 		log.Fatalf("server: loadkeys: %s", err)
 	}
 	config := tls.Config{Certificates: []tls.Certificate{cert}}
 	config.Rand = rand.Reader
-	service := "0.0.0.0:8000"
+	service := "0.0.0.0:4443"
 	listener, err := tls.Listen("tcp", service, &config)
 	if err != nil {
 		log.Fatalf("server: listen: %s", err)
