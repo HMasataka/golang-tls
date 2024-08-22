@@ -14,7 +14,7 @@ func main() {
 		log.Fatalf("server: loadkeys: %s", err)
 	}
 	config := tls.Config{Certificates: []tls.Certificate{cert}, InsecureSkipVerify: true}
-	conn, err := tls.Dial("tcp", "127.0.0.1:8000", &config)
+	conn, err := tls.Dial("tcp", "127.0.0.1:4443", &config)
 	if err != nil {
 		log.Fatalf("client: dial: %s", err)
 	}
