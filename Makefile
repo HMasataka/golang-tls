@@ -4,10 +4,13 @@
 KEY_FILE := credentials/develop/server.key
 CRT_FILE := credentials/develop/server.crt
 
-run: export KEY_FILE := $(KEY_FILE)
-run: export CRT_FILE := $(CRT_FILE)
-run: ## Run server
+serve: export KEY_FILE := $(KEY_FILE)
+serve: export CRT_FILE := $(CRT_FILE)
+serve: ## Run server
 	go run cmd/server/main.go
+
+client: ## Run client
+	go run cmd/client/main.go
 
 help: ## Show options
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
